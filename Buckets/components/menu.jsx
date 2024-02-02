@@ -1,51 +1,69 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Modal, } from 'react-native';
 import BottomSheet from 'react-native-simple-bottom-sheet';
-import Transactions from './transaction.jsx';
-import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import TransactionInput from './transactionInput.jsx';
+import Transaction from './transaction.jsx';
+import { scale } from 'react-native-size-matters';
 import menuStyles from '../styles/menuStyles.js';
 
-
 export default function Menu() {
-    const sheetContainer = { backgroundColor: 'black', alignItems: 'center' };
-    const centerAlign = { alignItems: 'center' };
-    const [extraPad, setExtraPad] = useState(true);
     const [transactions, setTransactions] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
 
-    const addTransaction = () => {
-        // Add a new Transaction component to the transactions array
-        setTransactions([...transactions, <Transactions key={transactions.length} />]);
+    const handleTransactionSubmit = ({ title, price }) => {
 
-        if (transactions.length > 4) {
-            setExtraPad(false);
-        }
+        console.log('Transaction submitted:', { title, price });
     };
 
-
     return (
-        <BottomSheet
-            isOpen
-            wrapperStyle={sheetContainer}
-        >
+        <BottomSheet isOpen wrapperStyle={menuStyles.sheetContainer}>
             {(onScrollEndDrag) => (
-                <ScrollView
-                    onScrollEndDrag={onScrollEndDrag}
-                    contentContainerStyle={centerAlign}
-                    persistentScrollbar={true}
-                >
-                    <View style={extraPad ? menuStyles.buttonCont : menuStyles.buttonContFalse}>
-                        <TouchableOpacity style={menuStyles.button} onPress={addTransaction}>
-                            <Text style={menuStyles.buttonTitle}> Add Transaction </Text>
-                        </TouchableOpacity>
-                    </View>
+                <View>
+                    <FlatList
+                        data={transactions}
+                        keyExtractor={(item, index) => `transaction-${index}`}
+                        renderItem={({ item, index }) => (
+                            <View>
+                                {item}
+                            </View>
+                        )}
+                        ListHeaderComponent={() => (
+                            <View style={menuStyles.buttonCont}>
+                                <TouchableOpacity
+                                    style={menuStyles.button}
+                                    onPress={() => setModalVisible(true)}
+                                >
+                                    <Text style={menuStyles.buttonTitle}> Add Transaction </Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                        ItemSeparatorComponent={() => <View style={menuStyles.separator} />}
+                        onScrollEndDrag={onScrollEndDrag}
+                        contentContainerStyle={menuStyles.contentContainer}
+                        indicatorStyle="black"
+                        removeClippedSubviews
+                    />
+                    <Modal
+                        transparent
+                        animationType="slide"
+                        visible={modalVisible}
+                        onRequestClose={() => setModalVisible(false)}
+                    >
+                        <View style={menuStyles.modalContainer}>
+                            <View style={menuStyles.modalContent}>
+                                <TransactionInput onSubmit={handleTransactionSubmit} />
+                                <View style={menuStyles.modalButtonsCont}>
+                                    <TouchableOpacity onPress={() => setModalVisible(false)} style={menuStyles.modalButtons}>
+                                        <Text style={{ color: 'white', textAlign: 'left' }}>Close</Text>
+                                    </TouchableOpacity>
 
-                    {transactions.map((transaction, index) => (
-                        <View key={`transaction-${index}`}>
-                            {transaction}
+                                </View>
+                            </View>
                         </View>
-                    ))}
-                </ScrollView>
-            )}
-        </BottomSheet>
+                    </Modal>
+                </View >
+            )
+            }
+        </BottomSheet >
     );
-};
+}

@@ -1,8 +1,8 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import Header from './components/header';
-import Transactions from './components/transaction';
 import Menu from './components/menu';
+import CustomBottomSheet from './components/custom';
 import HeaderStyles from './styles/headerStyles';
 
 export default function App() {
@@ -12,6 +12,7 @@ export default function App() {
         <Header />
         <Button title="+" onPress={() => console.log('Button pressed')} style={HeaderStyles.headerButton} />
       </View>
+      <View style={styles.separator} />
       <View style={styles.menu}>
         <Menu />
       </View>
@@ -22,7 +23,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#051221',
+    backgroundColor: '#01162E',
     paddingTop: 60,
     display: 'flex',
     flexDirection: 'column',
